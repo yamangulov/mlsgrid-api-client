@@ -1,4 +1,4 @@
-package com.innedhub.keystore.memento.interfaces;
+package com.innedhub.keystore.memento;
 
 import java.util.Map;
 

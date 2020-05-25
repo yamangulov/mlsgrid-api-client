@@ -1,4 +1,4 @@
-package com.innedhub.keystore.memento.classes;
+package com.innedhub.keystore.memento;
 
 public class Caretaker {
     Memento memento;

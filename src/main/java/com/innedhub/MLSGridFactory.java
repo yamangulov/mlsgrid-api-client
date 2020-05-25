@@ -7,7 +7,7 @@ public class MLSGridFactory {
     //overloaded method for SINGLE factory mode
     static MLSGridClient createClient(String apiUri, String apiKey) {
         try {
-            throw new NoSuchMethodException("Метод в разработке");
+            throw new NoSuchMethodException("Method is not implemented");
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -16,7 +16,7 @@ public class MLSGridFactory {
     //overloaded method for SERVICE factory mode
     static MLSGridClient createClient(String apiUri, String apiKey, String apiServiceKey) {
         try {
-            throw new NoSuchMethodException("Метод в разработке");
+            throw new NoSuchMethodException("Method is not implemented");
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -26,7 +26,7 @@ public class MLSGridFactory {
     //method for fulfill storeState in memento storage for using in SERVICE factory mode
     static void initKeyStore(KeyStore keyStore) {
         try {
-            throw new NoSuchMethodException("Метод в разработке");
+            throw new NoSuchMethodException("Method is not implemented");
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }

@@ -1,4 +1,4 @@
-package com.innedhub.keystore.memento.classes;
+package com.innedhub.keystore.memento;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ public class Originator {
     }
 
     public Memento saveState() {
-        return new Memento(currentStoreState);
+        return new MementoImpl(currentStoreState);
     }
 
     public Memento saveModifiedState(Memento memento) {

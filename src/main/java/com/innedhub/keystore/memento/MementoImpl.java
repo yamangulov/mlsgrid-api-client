@@ -1,12 +1,14 @@
-package com.innedhub.keystore.memento.classes;
+package com.innedhub.keystore.memento;
+
+import com.innedhub.keystore.memento.Memento;
 
 import java.util.Map;
 
-public class Memento implements com.innedhub.keystore.memento.interfaces.Memento {
+public class MementoImpl implements Memento {
     //state of store, key - name of service client, value - apiKey of service client
     private Map<String, String> storeState;
 
-    public Memento(Map<String, String> storeState) {
+    public MementoImpl(Map<String, String> storeState) {
         this.storeState = storeState;
     }
 
