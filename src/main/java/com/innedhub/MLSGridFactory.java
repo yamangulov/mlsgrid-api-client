@@ -1,30 +1,20 @@
 package com.innedhub;
 
-import com.innedhub.client.MLSGridClient;
 import com.innedhub.keystore.stores.KeyStore;
 
 public class MLSGridFactory {
+
     //overloaded method for SINGLE factory mode
-    static MLSGridClient createClient(String apiUri, String apiKey) {
-        try {
-            throw new NoSuchMethodException("Method is not implemented");
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static MLSGridClient createClient(String apiUri, String apiKey) {
+       return new SingleModeMLSGridClient(apiUri, apiKey);
     }
     //overloaded method for SERVICE factory mode
-    static MLSGridClient createClient(String apiUri, String apiKey, String apiServiceKey) {
-        try {
-            throw new NoSuchMethodException("Method is not implemented");
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static MLSGridClient createClient(String apiUri, String apiKey, String apiServiceKey) {
+        return new ServiceModeMLSGridClient(apiUri, apiKey, apiServiceKey);
     }
 
     //method for fulfill storeState in memento storage for using in SERVICE factory mode
-    static void initKeyStore(KeyStore keyStore) {
+    public static void initKeyStore(KeyStore keyStore) {
         try {
             throw new NoSuchMethodException("Method is not implemented");
         } catch (NoSuchMethodException e) {
