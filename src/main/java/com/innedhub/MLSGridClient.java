@@ -1,10 +1,10 @@
 package com.innedhub;
 
 import com.innedhub.enums.MLSResource;
-import com.innedhub.requests.MLSRequest;
+import com.innedhub.results.PropertyTO;
 
-import java.util.Map;
+import java.util.List;
 
 public interface MLSGridClient {
-    Map<String, String> searchResult(MLSResource resource, String... params);
+    List<PropertyTO> searchResult(MLSResource resource, String... params);
 }
