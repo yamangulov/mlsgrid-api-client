@@ -8,9 +8,9 @@ import lombok.Setter;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
 class SingleModeMLSGridClient implements MLSGridClient {
     private String apiUri;
     private String apiKey;

@@ -1,3 +1,6 @@
+plugins {
+    id "net.ltgt.apt" version "0.21"
+}
 apply plugin: "java-library"
 
 group 'com.innedhub'
@@ -18,9 +21,12 @@ repositories {
 
 dependencies {
     compile group: 'com.squareup.okhttp3', name: 'okhttp', version: "${okhttpVersion}"
-    compile group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}"
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: "${junitJupiterVersion}"
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: "${junitJupiterVersion}"
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: "${junitJupiterVersion}"
-
 }
+
+
+

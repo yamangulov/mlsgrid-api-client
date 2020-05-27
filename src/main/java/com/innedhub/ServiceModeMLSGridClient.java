@@ -4,17 +4,18 @@ import com.innedhub.enums.MLSResource;
 import com.innedhub.results.PropertyTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
-@AllArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
 class ServiceModeMLSGridClient implements MLSGridClient {
-    String apiUri;
-    String apiKey;
-    String apiServiceKey;
+    private String apiUri;
+    private String apiKey;
+    private String apiServiceKey;
 
     @Override
     public List<PropertyTO> searchResult(MLSResource resource, String... params) {
