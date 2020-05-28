@@ -4,7 +4,6 @@ import com.innedhub.enums.MLSResource;
 import com.innedhub.results.PropertyTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
