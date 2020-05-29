@@ -7,18 +7,22 @@ import com.innedhub.results.PropertyTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 
 import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
-class SingleModeMLSGridClient implements MLSGridClient {
+@Slf4j
+public class SingleModeMLSGridClient implements MLSGridClient {
     private String apiUri;
     private String apiKey;
 
     @Override
     public List<PropertyTO> searchResult(MLSResource resource, String... params) {
+        log.info("Test");
         //TODO
         //invoke doRequest in SyncGetMLSRequest, get json string response, handle it to List<PropertyTO> - for it invoke special handler. Handler can differ for different MLSResource. So handler should be invoked by interface.
         MLSRequest request = new SyncGetMLSRequest();
