@@ -3,6 +3,7 @@ package com.innedhub.requests;
 import com.innedhub.PropsLoader;
 import com.innedhub.enums.MLSResource;
 import com.innedhub.exceptions.NotValidKeyForServiceModeException;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class SyncGetMLSRequest implements MLSRequest {
     //overloaded method for SINGLE factory mode
     @Override
@@ -43,6 +45,7 @@ public class SyncGetMLSRequest implements MLSRequest {
     }
 
     private String getResponse(MLSResource resource, String apiUri, String apiServiceKey, String... params) {
+        //log.info("Params length is: {}", params.length);
         String responseString = null;
         Properties properties = new Properties();
         PropsLoader.load(properties);
@@ -70,10 +73,11 @@ public class SyncGetMLSRequest implements MLSRequest {
         //get keys for specific resource from corresponding enum because set of get params differs for different resources (there's searchable fields in https://docs.mlsgrid.com/#searchable-fields)
         //append key=value for each key in specific set of keys to StringBuilder
         if (params.length != 0) {
-            requestStringBuilder.append("?filter=");
+            requestStringBuilder.append("?$filter=");
             List<String> resourceParams = resource.getResourceParams();
             for (int i = 0; i < params.length; i++) {
-                if (!params[i].isEmpty()) {
+                //log.info("Param i is: {}", params[i]);
+                if (params[i] != null && !params[i].isEmpty()) {
                     requestStringBuilder.append(resourceParams.get(i));
                     requestStringBuilder.append("%20eq%20");
                     requestStringBuilder.append(params[i]);
@@ -84,6 +88,7 @@ public class SyncGetMLSRequest implements MLSRequest {
             }
         }
         String requestString = requestStringBuilder.toString();
+        log.info("request string is: {}", requestString);
 
         Request request = new Request.Builder()
                 .url(requestString)

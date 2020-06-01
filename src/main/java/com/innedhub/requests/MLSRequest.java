@@ -8,5 +8,5 @@ public interface MLSRequest {
     String doRequest(MLSResource resource, String apiUri, String apiKey, String... params);
 
     //overloaded method for SERVICE factory mode
-    String doRequest(MLSResource resource, String apiUri, String apiKey, String apiServiceKey, String... params) throws NotValidKeyForServiceModeException;
+    String doRequest(MLSResource resource, String apiUri, String apiKey, String apiServiceKey, String... params);
 }

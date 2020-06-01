@@ -7,5 +7,5 @@ import com.innedhub.results.PropertyTO;
 import java.util.List;
 
 public interface MLSGridClient {
-    List<PropertyTO> searchResult(MLSResource resource, String... params) throws NotValidKeyForServiceModeException;
+    List<PropertyTO> searchResult(MLSResource resource, String... params);
 }
