@@ -26,7 +26,7 @@ public class SingleModeMLSGridClient implements MLSGridClient {
         //invoke doRequest in SyncGetMLSRequest, get json string response, handle it to List<PropertyTO> - for it invoke special handler. Handler can differ for different MLSResource. So handler should be invoked by interface.
         MLSRequest request = new SyncGetMLSRequest();
         String responseString = request.doRequest(resource, apiUri, apiKey, params);
-        //log.info("json response from server: {}", responseString);
+        log.info("json response from server: {}", responseString);
         return null;
     }
 }

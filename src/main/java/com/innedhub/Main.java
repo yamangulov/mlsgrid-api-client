@@ -9,6 +9,6 @@ public class Main {
         MLSGridFactory factory = new MLSGridFactory();
         MLSGridClient gridClient = factory.createClient("api.mlsgrid.com", "9559104ea30324a4cbe8b0b25b9b0ec6be948ca8");
         //not used searchable fields should be null or "" (empty string)
-        gridClient.searchResult(MLSResource.PROPERTY_RESI, null, null, null, null, "true");
+        gridClient.searchResult(MLSResource.PROPERTY_RESI, null, null, null, "MRD06341151", "true");
     }
 }

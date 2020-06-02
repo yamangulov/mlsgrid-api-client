@@ -70,8 +70,8 @@ public class SyncGetMLSRequest implements MLSRequest {
         requestStringBuilder.append(apiUri);
         requestStringBuilder.append("/");
         requestStringBuilder.append(resource.getResource());
-        //get keys for specific resource from corresponding enum because set of get params differs for different resources (there's searchable fields in https://docs.mlsgrid.com/#searchable-fields)
-        //append key=value for each key in specific set of keys to StringBuilder
+        //getting keys for specific resource from corresponding enum because set of get params differs for different resources (there's searchable fields in https://docs.mlsgrid.com/#searchable-fields)
+        //appending key=value for each key in specific set of keys to StringBuilder
         if (params.length != 0) {
             requestStringBuilder.append("?$filter=");
             List<String> resourceParams = resource.getResourceParams();
@@ -79,10 +79,23 @@ public class SyncGetMLSRequest implements MLSRequest {
                 //log.info("Param i is: {}", params[i]);
                 if (params[i] != null && !params[i].isEmpty()) {
                     requestStringBuilder.append(resourceParams.get(i));
-                    requestStringBuilder.append("%20eq%20");
-                    requestStringBuilder.append(params[i]);
-                    if (i != params.length -1) {
-                        requestStringBuilder.append("&");
+                    if (resourceParams.get(i).equals("StandardStatus")) {
+                        requestStringBuilder.append("+eq+Enums.StandardStatus%27");
+                    } else {
+                        requestStringBuilder.append("%20eq%20");
+                    }
+                    if (resourceParams.get(i).equals("MlgCanView")) {
+                        requestStringBuilder.append(params[i]);
+                    } else if (resourceParams.get(i).equals("StandardStatus")) {
+                        requestStringBuilder.append(params[i]);
+                        requestStringBuilder.append("%27");
+                    } else {
+                        requestStringBuilder.append("'");
+                        requestStringBuilder.append(params[i]);
+                        requestStringBuilder.append("'");
+                    }
+                    if (i != params.length - 1) {
+                        requestStringBuilder.append("%20and%20");
                     }
                 }
             }
