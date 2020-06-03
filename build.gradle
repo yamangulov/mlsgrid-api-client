@@ -28,9 +28,23 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-simple', version: "${slf4jVersion}"
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+
+    compile group: 'org.apache.olingo', name: 'odata-commons-api', version: "${odataVersion}"
+    // https://mvnrepository.com/artifact/org.apache.olingo/odata-commons-core
+    compile group: 'org.apache.olingo', name: 'odata-commons-core', version:"${odataVersion}"
+    // https://mvnrepository.com/artifact/org.apache.olingo/odata-client-api
+    compile group: 'org.apache.olingo', name: 'odata-client-api', version: "${odataVersion}"
     compile group: 'org.apache.olingo', name: 'odata-client-core', version: "${odataVersion}"
+
+
+
+
+
+
     compile group: 'org.apache.olingo', name: 'olingo-odata2-api', version: "${odata2Version}"
     compile group: 'org.apache.olingo', name: 'olingo-odata2-core', version: "${odata2Version}"
+
+
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: "${junitJupiterVersion}"
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: "${junitJupiterVersion}"
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: "${junitJupiterVersion}"

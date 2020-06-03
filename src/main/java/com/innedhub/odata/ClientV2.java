@@ -17,6 +17,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.apache.olingo.client.api.ODataClient;
+import org.apache.olingo.client.core.ODataClientFactory;
+import org.apache.olingo.client.core.http.BasicAuthHttpClientFactory;
 import org.apache.olingo.odata2.api.commons.HttpStatusCodes;
 import org.apache.olingo.odata2.api.edm.Edm;
 import org.apache.olingo.odata2.api.edm.EdmEntityContainer;
@@ -66,6 +72,9 @@ public class ClientV2 {
 //        app.generateSampleData(serviceUrl);
 
         print("\n----- Read Edm ------------------------------");
+
+
+
         Edm edm = app.readEdm(serviceUrl);
         print("Read default EntityContainer: " + edm.getDefaultEntityContainer().getName());
 
@@ -118,22 +127,22 @@ public class ClientV2 {
             intend(b, level);
             b.append(entry.getKey()).append(": ");
             Object value = entry.getValue();
-            if(value instanceof Map) {
-                value = prettyPrint((Map<String, Object>)value, level+1);
+            if (value instanceof Map) {
+                value = prettyPrint((Map<String, Object>) value, level + 1);
                 b.append(value).append("\n");
-            } else if(value instanceof Calendar) {
+            } else if (value instanceof Calendar) {
                 Calendar cal = (Calendar) value;
                 value = SimpleDateFormat.getInstance().format(cal.getTime());
                 b.append(value).append("\n");
-            } else if(value instanceof ODataDeltaFeed) {
+            } else if (value instanceof ODataDeltaFeed) {
                 ODataDeltaFeed feed = (ODataDeltaFeed) value;
-                List<ODataEntry> inlineEntries =  feed.getEntries();
+                List<ODataEntry> inlineEntries = feed.getEntries();
                 b.append("{");
                 for (ODataEntry oDataEntry : inlineEntries) {
-                    value = prettyPrint((Map<String, Object>)oDataEntry.getProperties(), level+1);
+                    value = prettyPrint((Map<String, Object>) oDataEntry.getProperties(), level + 1);
                     b.append("\n[\n").append(value).append("\n],");
                 }
-                b.deleteCharAt(b.length()-1);
+                b.deleteCharAt(b.length() - 1);
                 intend(b, level);
                 b.append("}\n");
             } else {
@@ -141,7 +150,7 @@ public class ClientV2 {
             }
         }
         // remove last line break
-        b.deleteCharAt(b.length()-1);
+        b.deleteCharAt(b.length() - 1);
         return b.toString();
     }
 
@@ -161,7 +170,24 @@ public class ClientV2 {
     }
 
     public Edm readEdm(String serviceUrl) throws IOException, ODataException {
-        InputStream content = execute(serviceUrl + SEPARATOR + METADATA, APPLICATION_XML, HTTP_METHOD_GET);
+
+
+        /*InputStream content = execute(serviceUrl + SEPARATOR + METADATA, APPLICATION_XML, HTTP_METHOD_GET);*/
+
+        //We could use OkHttp here because its configuration is more transparent
+        //but in the end we get an error "EntityProviderException: Invalid or missing namespace for 'Schema'."
+        // because namespace mls grid api belongs to version 4.
+        // mls grid namepsace http://docs.oasis-open.org/odata/ns/edm
+        // so we need to use v4 please see Client class for that
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        Request request = new Request.Builder()
+                .url("https://api.mlsgrid.com/$metadata")
+                .method("GET", null)
+                .addHeader("Authorization", "Bearer 9559104ea30324a4cbe8b0b25b9b0ec6be948ca8")
+                .build();
+        Response response = client.newCall(request).execute();
+        InputStream content = response.body().byteStream();
         return EntityProvider.readMetadata(content, false);
     }
 
@@ -199,7 +225,7 @@ public class ClientV2 {
     }
 
     private InputStream logRawContent(String prefix, InputStream content, String postfix) throws IOException {
-        if(PRINT_RAW_CONTENT) {
+        if (PRINT_RAW_CONTENT) {
             byte[] buffer = streamToArray(content);
             print(prefix + new String(buffer) + postfix);
             return new ByteArrayInputStream(buffer);
@@ -211,7 +237,7 @@ public class ClientV2 {
         byte[] result = new byte[0];
         byte[] tmp = new byte[8192];
         int readCount = stream.read(tmp);
-        while(readCount >= 0) {
+        while (readCount >= 0) {
             byte[] innerTmp = new byte[result.length + readCount];
             System.arraycopy(result, 0, innerTmp, 0, result.length);
             System.arraycopy(tmp, 0, innerTmp, result.length, readCount);
@@ -268,7 +294,7 @@ public class ClientV2 {
         // if a entity is created (via POST request) the response body contains the new created entity
         ODataEntry entry = null;
         HttpStatusCodes statusCode = HttpStatusCodes.fromStatusCode(connection.getResponseCode());
-        if(statusCode == HttpStatusCodes.CREATED) {
+        if (statusCode == HttpStatusCodes.CREATED) {
             // get the content as InputStream and de-serialize it into an ODataEntry object
             InputStream content = connection.getInputStream();
             content = logRawContent(httpMethod + " request on uri '" + absolutUri + "' with content:\n  ", content, "\n");
@@ -296,10 +322,10 @@ public class ClientV2 {
 
     private String createUri(String serviceUri, String entitySetName, String id, String expand) {
         final StringBuilder absolutUri = new StringBuilder(serviceUri).append(SEPARATOR).append(entitySetName);
-        if(id != null) {
+        if (id != null) {
             absolutUri.append("(").append(id).append(")");
         }
-        if(expand != null) {
+        if (expand != null) {
             absolutUri.append("/?$expand=").append(expand);
         }
         return absolutUri.toString();
@@ -307,6 +333,7 @@ public class ClientV2 {
 
     private InputStream execute(String relativeUri, String contentType, String httpMethod) throws IOException {
         HttpURLConnection connection = initializeConnection(relativeUri, contentType, httpMethod);
+
 
         //connection doesn't have method for setting custom headers - Yamangulov
         connection.connect();
@@ -330,10 +357,13 @@ public class ClientV2 {
             throws MalformedURLException, IOException {
         URL url = new URL(absolutUri);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
+        connection.setRequestProperty("Authorization", "Bearer 9559104ea30324a4cbe8b0b25b9b0ec6be948ca8");
         connection.setRequestMethod(httpMethod);
         connection.setRequestProperty(HTTP_HEADER_ACCEPT, contentType);
-        if(HTTP_METHOD_POST.equals(httpMethod) || HTTP_METHOD_PUT.equals(httpMethod)) {
+
+        connection.setReadTimeout(15000);
+        connection.setConnectTimeout(15000);
+        if (HTTP_METHOD_POST.equals(httpMethod) || HTTP_METHOD_PUT.equals(httpMethod)) {
             connection.setDoOutput(true);
             connection.setRequestProperty(HTTP_HEADER_CONTENT_TYPE, contentType);
         }

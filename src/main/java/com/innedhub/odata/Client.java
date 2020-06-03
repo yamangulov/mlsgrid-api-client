@@ -53,11 +53,13 @@ public class Client {
 
     public Client() {
         client = ODataClientFactory.getClient();
+        client.getConfiguration().setHttpClientFactory(new BearerAuthHttpClientFactory("9559104ea30324a4cbe8b0b25b9b0ec6be948ca8"));
     }
 
     public static void main(String[] params) throws Exception {
         Client app = new Client();
-        app.perform("https://api.mlsgrid.com/$metadata/");
+        //EdmMetadataRequest already has $metadata uri
+        app.perform("https://api.mlsgrid.com/");
     }
 
     void perform(String serviceUrl) throws Exception {
@@ -133,16 +135,16 @@ public class Client {
             intend(b, level);
             b.append(entry.getKey()).append(": ");
             Object value = entry.getValue();
-            if(value instanceof Map) {
-                value = prettyPrint((Map<String, Object>) value, level+1);
-            } else if(value instanceof Calendar) {
+            if (value instanceof Map) {
+                value = prettyPrint((Map<String, Object>) value, level + 1);
+            } else if (value instanceof Calendar) {
                 Calendar cal = (Calendar) value;
                 value = SimpleDateFormat.getInstance().format(cal.getTime());
             }
             b.append(value).append("\n");
         }
         // remove last line break
-        b.deleteCharAt(b.length()-1);
+        b.deleteCharAt(b.length() - 1);
         return b.toString();
     }
 
@@ -178,12 +180,6 @@ public class Client {
 
     public Edm readEdm(String serviceUrl) throws IOException {
         EdmMetadataRequest request = client.getRetrieveRequestFactory().getMetadataRequest(serviceUrl);
-
-        //next three lines added by Yamangulov for authorization and content type setting by https://stackoverflow.com/questions/38013642/trying-to-connect-to-datamarket-returns-exception , but nevertheless it cause 401 code
-        request.setAccept("application/atom+xml,application/xml");
-        request.setContentType("application/atom+xml,application/xml;odata.metadata=full");
-        request.addCustomHeader("Authorization", "Bearer " + "9559104ea30324a4cbe8b0b25b9b0ec6be948ca8");
-
         ODataRetrieveResponse<Edm> response = request.execute();
         return response.getBody();
     }
