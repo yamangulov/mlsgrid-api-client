@@ -29,11 +29,11 @@ dependencies {
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
 
-    compile group: 'org.apache.olingo', name: 'odata-commons-api', version: "${odataVersion}"
+    /*compile group: 'org.apache.olingo', name: 'odata-commons-api', version: "${odataVersion}"
     // https://mvnrepository.com/artifact/org.apache.olingo/odata-commons-core
     compile group: 'org.apache.olingo', name: 'odata-commons-core', version:"${odataVersion}"
     // https://mvnrepository.com/artifact/org.apache.olingo/odata-client-api
-    compile group: 'org.apache.olingo', name: 'odata-client-api', version: "${odataVersion}"
+    compile group: 'org.apache.olingo', name: 'odata-client-api', version: "${odataVersion}"*/
     compile group: 'org.apache.olingo', name: 'odata-client-core', version: "${odataVersion}"
 
 
