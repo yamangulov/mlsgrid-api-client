@@ -15,6 +15,7 @@ ext {
     junitJupiterVersion = "5.7.0-M1"
     slf4jVersion = "2.0.0-alpha1"
     odataVersion = "4.7.1"
+    odata2Version = "2.0.11"
 }
 
 repositories {
@@ -28,6 +29,8 @@ dependencies {
     compileOnly("org.projectlombok:lombok:${lombokVersion}")
     annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     compile group: 'org.apache.olingo', name: 'odata-client-core', version: "${odataVersion}"
+    compile group: 'org.apache.olingo', name: 'olingo-odata2-api', version: "${odata2Version}"
+    compile group: 'org.apache.olingo', name: 'olingo-odata2-core', version: "${odata2Version}"
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: "${junitJupiterVersion}"
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: "${junitJupiterVersion}"
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: "${junitJupiterVersion}"
