@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PropertyTO {
-    private String name;
-    private String value;
+    //TODO
+    //This is not correct realization of PropertyTO. It must have fields for storing all properties for one search result object
+
 }

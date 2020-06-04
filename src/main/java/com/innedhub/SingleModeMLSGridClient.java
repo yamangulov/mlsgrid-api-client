@@ -1,6 +1,7 @@
 package com.innedhub;
 
 import com.innedhub.enums.MLSResource;
+import com.innedhub.odata.Client;
 import com.innedhub.requests.MLSRequest;
 import com.innedhub.requests.SyncGetMLSRequest;
 import com.innedhub.results.PropertyTO;
@@ -21,7 +22,14 @@ public class SingleModeMLSGridClient implements MLSGridClient {
     private String apiKey;
 
     @Override
-    public List<PropertyTO> searchResult(MLSResource resource, String... params) {
+    public List<PropertyTO> searchResult(MLSResource resource, String request) {
+        Client client = new Client(apiUri, apiKey);
+        return client.doRequestWithFilter(resource, request);
+    }
+
+    //old realization with okhttp
+    @Override
+    public List<PropertyTO> searchResultOkHttp(MLSResource resource, String... params) {
         //TODO
         //invoke doRequest in SyncGetMLSRequest, get json string response, handle it to List<PropertyTO> - for it invoke special handler. Handler can differ for different MLSResource. So handler should be invoked by interface.
         MLSRequest request = new SyncGetMLSRequest();

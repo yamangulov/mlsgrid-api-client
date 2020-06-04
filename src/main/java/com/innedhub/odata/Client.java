@@ -1,5 +1,7 @@
 package com.innedhub.odata;
 
+import com.innedhub.enums.MLSResource;
+import com.innedhub.results.PropertyTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.EdmMetadataRequest;
@@ -9,7 +11,6 @@ import org.apache.olingo.client.api.domain.*;
 import org.apache.olingo.client.core.ODataClientFactory;
 import org.apache.olingo.commons.api.edm.Edm;
 
-import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -22,14 +23,38 @@ import java.util.Map.Entry;
 @Slf4j
 public class Client {
     private ODataClient client;
+    private String apiUri;
 
-    public Client() {
+    public Client(String apiUri, String apiKey) {
+        this.apiUri = apiUri;
         client = ODataClientFactory.getClient();
-        client.getConfiguration().setHttpClientFactory(new BearerAuthHttpClientFactory("9559104ea30324a4cbe8b0b25b9b0ec6be948ca8"));
+        client.getConfiguration().setHttpClientFactory(new BearerAuthHttpClientFactory(apiKey));
     }
 
+    public List<PropertyTO> doRequestWithFilter(MLSResource resource, String request) {
+        Edm edm = readEdm(apiUri);
+        List<PropertyTO> listProperties = new ArrayList<>();
+        ClientEntitySetIterator<ClientEntitySet, ClientEntity> iterator;
+        iterator = readEntitiesWithFilter(edm, apiUri, resource.getResource(), request);
+        while (iterator.hasNext()) {
+            PropertyTO propertyTO;
+            ClientEntity ce = iterator.next();
+            propertyTO = getPropertyTO(ce.getProperties(), 0);
+            listProperties.add(propertyTO);
+        }
+        return listProperties;
+    }
+
+    private PropertyTO getPropertyTO(List<ClientProperty> properties, int level) {
+        //TODO
+        //realize getting name and value each property in each search result and writing them into List<PropertyTo>
+        return null;
+    }
+
+    //TODO
+    //below methods remaind from testing sample of Class.java. They will be deleted after developing class for our library
     public static void main(String[] params) throws Exception {
-        Client app = new Client();
+        Client app = new Client("https://api.mlsgrid.com/", "9559104ea30324a4cbe8b0b25b9b0ec6be948ca8");
         app.perform("https://api.mlsgrid.com/");
     }
 
@@ -101,7 +126,7 @@ public class Client {
         }
     }
 
-    public Edm readEdm(String serviceUrl) throws IOException {
+    public Edm readEdm(String serviceUrl) {
         EdmMetadataRequest request = client.getRetrieveRequestFactory().getMetadataRequest(serviceUrl);
         ODataRetrieveResponse<Edm> response = request.execute();
         return response.getBody();
