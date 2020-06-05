@@ -10,116 +10,45 @@ import java.util.*;
 @Getter
 public enum MLSResource {
     PROPERTY_RESI(
-            "PropertyResi",
-            getParamsList("Property")
+            "PropertyResi"
     ),
     PROPERTY_RLSE(
-            "PropertyRlse",
-            getParamsList("Property")
+            "PropertyRlse"
     ),
     PROPERTY_RINC(
-            "PropertyRinc",
-            getParamsList("Property")
+            "PropertyRinc"
     ),
     PROPERTY_LAND(
-            "PropertyLand",
-            getParamsList("Property")
+            "PropertyLand"
     ),
     PROPERTY_FARM(
-            "PropertyFarm",
-            getParamsList("Property")
+            "PropertyFarm"
     ),
     PROPERTY_MOBI(
-            "PropertyMobi",
-            getParamsList("Property")
+            "PropertyMobi"
     ),
     PROPERTY_COMS(
-            "PropertyComs",
-            getParamsList("Property")
+            "PropertyComs"
     ),
     PROPERTY_COML(
-            "PropertyComl",
-            getParamsList("Property")
+            "PropertyComl"
     ),
     PROPERTY_BUSO(
-            "PropertyBuso",
-            getParamsList("Property")
+            "PropertyBuso"
     ),
     MEDIA(
-            "Media",
-            getParamsList("Media")
+            "Media"
     ),
     MEMBER(
-            "Member",
-            getParamsList("Member")
+            "Member"
     ),
     OFFICE(
-            "Office",
-            getParamsList("Office")
+            "Office"
     ),
     OPEN_HOUSE(
-            "OpenHouse",
-            getParamsList("OpenHouse")
+            "OpenHouse"
     );
 
     private final String resource;
-    private final List<String> resourceParams;
-
-    private static List<String> getParamsList(String resourceName) {
-        List<String> paramsList = new LinkedList<>();
-        switch (resourceName) {
-            case "Property":
-                paramsList = Arrays.asList(
-                        "ModificationTimestamp",
-                        "OriginatingSystemName",
-                        "StandardStatus",
-                        "ListingId",
-                        "MlgCanView"
-                );
-                break;
-            case "Media":
-                paramsList = Arrays.asList(
-                        "ModificationTimestamp",
-                        "OriginatingSystemName",
-                        "MediaKey",
-                        "ResourceRecordID",
-                        "MlgCanView"
-                );
-                break;
-            case "Member":
-                paramsList = Arrays.asList(
-                        "ModificationTimestamp",
-                        "OriginatingSystemName",
-                        "MemberMlsId",
-                        "MlgCanView"
-                );
-                break;
-            case "Office":
-                paramsList = Arrays.asList(
-                        "ModificationTimestamp",
-                        "OriginatingSystemName",
-                        "OfficeMlsId",
-                        "MlgCanView"
-                );
-                break;
-            case "OpenHouse":
-                paramsList = Arrays.asList(
-                        "ModificationTimestamp",
-                        "OriginatingSystemName",
-                        "OpenHouseKey",
-                        "ListingId",
-                        "MlgCanView",
-                        "OpenHouseDate"
-                );
-                break;
-            default:
-                try {
-                    throw new NotValidParamsForSearch();
-                } catch (NotValidParamsForSearch e) {
-                    e.printStackTrace();
-                }
-        }
-        return paramsList;
-    }
 
 }
