@@ -36,6 +36,11 @@ dependencies {
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: "${junitJupiterVersion}"
 }
 
+// it needs only if you run tests through Gradle, not if the File - Settings - Build - Gradle - Run tests using - Intellij IDEA setting is checked. Don't use in production!
+//test {
+//    useJUnitPlatform()
+//}
+
 logging.captureStandardOutput LogLevel.INFO
 
 
