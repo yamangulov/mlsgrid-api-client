@@ -94,7 +94,7 @@ public class Client {
     }
 
     private ClientEntitySetIterator<ClientEntitySet, ClientEntity> readEntities(Edm edm, URI absoluteUri) {
-        System.out.println("URI = " + absoluteUri);
+        //System.out.println("URI = " + absoluteUri);
         ODataEntitySetIteratorRequest<ClientEntitySet, ClientEntity> request =
                 client.getRetrieveRequestFactory().getEntitySetIteratorRequest(absoluteUri);
         request.setAccept("application/json");

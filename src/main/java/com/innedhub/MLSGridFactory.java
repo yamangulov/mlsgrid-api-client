@@ -1,7 +1,9 @@
 package com.innedhub;
 
 import com.innedhub.keystore.stores.KeyStore;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class MLSGridFactory {
 
     //overloaded method for SINGLE factory mode
@@ -18,7 +20,7 @@ public class MLSGridFactory {
         try {
             throw new NoSuchMethodException("Method is not implemented");
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         }
     }
 }
