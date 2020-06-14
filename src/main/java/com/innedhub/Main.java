@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.S3Object;
+import com.innedhub.aws.XferMgrCopy;
+import com.innedhub.aws.XferMgrDownload;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -19,18 +21,20 @@ public class Main {
     private static String awsAccessKey = "AKIAJB3RTOCO4PBLPN7A";
     private static String awsSecretKey = "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";
 
+
+
     public static void main(String[] args) {
 
         MLSGridFactory factory = new MLSGridFactory();
         MLSGridClient gridClient = factory.createClient("https://api.mlsgrid.com/", "9559104ea30324a4cbe8b0b25b9b0ec6be948ca8");
         gridClient.initAmazonConnection(bucketName, region, awsAccessKey, awsSecretKey, gridClient);
+        AmazonS3 amazonS3 = gridClient.getAmazonS3();
 
-        //Next three lines doesn't work. There aren't object key and bucket name of source photo.
-//        AmazonS3 amazonS3 = gridClient.getAmazonS3();
-//        S3Object s3Object = amazonS3.getObject("294A46D26B8F2797E040010A340171D1", "5aaa0569b61ff020b918d06a");
-//        log.info("S3Object is: {}", s3Object);
-
-
+        /*
+        1) Если использовать собственные credentials, то мы получим подсказку : Downloading to file: thumbnail_0.jpg
+The bucket is in this region: us-east-1. Please use this region to retry the request 2) Если после это в credentials мы поставим вместо нашего региона us-west-2, то мы получаем сообщение Forbidden. То есть  закачка по имени бакета из чужого бакета запрещена все равно.
+         */
+        XferMgrDownload.downloadFile(amazonS3, "mlsgrid", "images/742be4ba-76e6-4073-a935-5d6b1f3ec1c2.jpg", "thumbnail_" + "0" + ".jpg", false);
 
     }
 }
