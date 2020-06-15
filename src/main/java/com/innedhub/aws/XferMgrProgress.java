@@ -1,29 +1,4 @@
-//snippet-sourcedescription:[XferMgrProgress.java demonstrates how to use the S3 transfermanager to upload files to a bucket and show progress of the upload.]
-//snippet-keyword:[Java]
-//snippet-sourcesyntax:[java]
-//snippet-keyword:[Code Sample]
-//snippet-keyword:[Amazon S3]
-//snippet-keyword:[TransferProgress]
-//snippet-keyword:[TransferManager]
-//snippet-service:[s3]
-//snippet-sourcetype:[full-example]
-//snippet-sourcedate:[]
-//snippet-sourceauthor:[soo-aws]
-/*
-   Copyright 2010-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-
-   This file is licensed under the Apache License, Version 2.0 (the "License").
-   You may not use this file except in compliance with the License. A copy of
-   the License is located at
-
-    http://aws.amazon.com/apache2.0/
-
-   This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied. See the License for the
-   specific language governing permissions and limitations under the License.
-*/
 package com.innedhub.aws;
-// snippet-start:[s3.java1.s3_xfer_mgr_progress.import]
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -31,37 +6,37 @@ import com.amazonaws.event.ProgressEvent;
 import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.transfer.*;
 import com.amazonaws.services.s3.transfer.Transfer.TransferState;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-// snippet-end:[s3.java1.s3_xfer_mgr_progress.import]
 
-// snippet-start:[s3.java1.s3_xfer_mgr_progress.complete]
+@Slf4j
 public class XferMgrProgress {
     // waits for the transfer to complete, catching any exceptions that occur.
     public static void waitForCompletion(Transfer xfer) {
-        // snippet-start:[s3.java1.s3_xfer_mgr_progress.wait_for_transfer]
+        
         try {
             xfer.waitForCompletion();
         } catch (AmazonServiceException e) {
-            System.err.println("Amazon service error: " + e.getMessage());
+            log.error("Amazon service error: " + e.getMessage());
             System.exit(1);
         } catch (AmazonClientException e) {
-            System.err.println("Amazon client error: " + e.getMessage());
+            log.error("Amazon client error: " + e.getMessage());
             System.exit(1);
         } catch (InterruptedException e) {
-            System.err.println("Transfer interrupted: " + e.getMessage());
+            log.error("Transfer interrupted: " + e.getMessage());
             System.exit(1);
         }
-        // snippet-end:[s3.java1.s3_xfer_mgr_progress.wait_for_transfer]
+        
     }
 
     // Prints progress while waiting for the transfer to finish.
     public static void showTransferProgress(Transfer xfer) {
-        // snippet-start:[s3.java1.s3_xfer_mgr_progress.poll]
+        
         // print the transfer's human-readable description
-        System.out.println(xfer.getDescription());
+        log.info(xfer.getDescription());
         // print an empty progress bar...
         printProgressBar(0.0);
         // update the progress bar while the xfer is ongoing.
@@ -82,31 +57,30 @@ public class XferMgrProgress {
         } while (xfer.isDone() == false);
         // print the final state of the transfer.
         TransferState xfer_state = xfer.getState();
-        System.out.println(": " + xfer_state);
-        // snippet-end:[s3.java1.s3_xfer_mgr_progress.poll]
+        log.info(": " + xfer_state);
+        
     }
 
     // Prints progress of a multiple file upload while waiting for it to finish.
     public static void showMultiUploadProgress(MultipleFileUpload multi_upload) {
         // print the upload's human-readable description
-        System.out.println(multi_upload.getDescription());
-
-        // snippet-start:[s3.java1.s3_xfer_mgr_progress.substranferes]
+        log.info(multi_upload.getDescription());
+        
         Collection<? extends Upload> sub_xfers = new ArrayList<Upload>();
         sub_xfers = multi_upload.getSubTransfers();
 
         do {
-            System.out.println("\nSubtransfer progress:\n");
+            log.info("\nSubtransfer progress:\n");
             for (Upload u : sub_xfers) {
-                System.out.println("  " + u.getDescription());
+                log.info("  " + u.getDescription());
                 if (u.isDone()) {
                     TransferState xfer_state = u.getState();
-                    System.out.println("  " + xfer_state);
+                    log.info("  " + xfer_state);
                 } else {
                     TransferProgress progress = u.getProgress();
                     double pct = progress.getPercentTransferred();
                     printProgressBar(pct);
-                    System.out.println();
+                    log.info("\n");
                 }
             }
 
@@ -119,8 +93,8 @@ public class XferMgrProgress {
         } while (multi_upload.isDone() == false);
         // print the final state of the transfer.
         TransferState xfer_state = multi_upload.getState();
-        System.out.println("\nMultipleFileUpload " + xfer_state);
-        // snippet-end:[s3.java1.s3_xfer_mgr_progress.substranferes]
+        log.info("\nMultipleFileUpload " + xfer_state);
+        
     }
 
     // prints a simple text progressbar: [#####     ]
@@ -144,7 +118,7 @@ public class XferMgrProgress {
 
     public static void uploadFileWithListener(String file_path,
                                               String bucket_name, String key_prefix, boolean pause) {
-        System.out.println("file: " + file_path +
+        log.info("file: " + file_path +
                 (pause ? " (pause)" : ""));
 
         String key_name = null;
@@ -153,8 +127,7 @@ public class XferMgrProgress {
         } else {
             key_name = file_path;
         }
-
-        // snippet-start:[s3.java1.s3_xfer_mgr_progress.progress_listener]
+        
         File f = new File(file_path);
         TransferManager xfer_mgr = TransferManagerBuilder.standard().build();
         try {
@@ -172,19 +145,19 @@ public class XferMgrProgress {
             XferMgrProgress.waitForCompletion(u);
             // print the final state of the transfer.
             TransferState xfer_state = u.getState();
-            System.out.println(": " + xfer_state);
+            log.info(": " + xfer_state);
         } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
+            log.error(e.getErrorMessage());
             System.exit(1);
         }
         xfer_mgr.shutdownNow();
-        // snippet-end:[s3.java1.s3_xfer_mgr_progress.progress_listener]
+        
     }
 
     public static void uploadDirWithSubprogress(String dir_path,
                                                 String bucket_name, String key_prefix, boolean recursive,
                                                 boolean pause) {
-        System.out.println("directory: " + dir_path + (recursive ?
+        log.info("directory: " + dir_path + (recursive ?
                 " (recursive)" : "") + (pause ? " (pause)" : ""));
 
         TransferManager xfer_mgr = new TransferManager();
@@ -196,10 +169,9 @@ public class XferMgrProgress {
             // or block with Transfer.waitForCompletion()
             XferMgrProgress.waitForCompletion(multi_upload);
         } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
+            log.error(e.getErrorMessage());
             System.exit(1);
         }
         xfer_mgr.shutdownNow();
     }
 }
-// snippet-end:[s3.java1.s3_xfer_mgr_progress.complete]

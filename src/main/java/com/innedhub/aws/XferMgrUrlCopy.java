@@ -6,10 +6,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
-import com.amazonaws.util.StringInputStream;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -23,14 +21,14 @@ public class XferMgrUrlCopy {
 
         InputStream inputStream = null;
         try {
-            //inputStream = new URL(from_url).openStream();
-            inputStream = new StringInputStream("Test string");//test string to check credentials for passing inputstreams to bucket object
+            inputStream = new URL(from_url).openStream();
         } catch (IOException e) {
             log.error(e.getMessage());
         }
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType("image/jpeg");
         objectMetadata.addUserMetadata("title", to_bucket + "/" + to_key);
+        //method don't set objectMetadata.setContentLength, because mlsgrid aws bucket don't give it, also it can be the same for other buckets where the photos from api.mlsgrid.com store, but method works well despite warning in log.
         TransferManager xfer_mgr = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
         try {
             Upload xfer = xfer_mgr.upload(to_bucket, to_key, inputStream, objectMetadata);
