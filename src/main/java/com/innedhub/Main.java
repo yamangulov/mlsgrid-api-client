@@ -1,21 +1,6 @@
 package com.innedhub;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.iterable.S3Objects;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.innedhub.aws.XferMgrDownload;
-import com.innedhub.aws.XferMgrUpload;
-import com.innedhub.aws.XferMgrUrlCopy;
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.File;
-import java.util.List;
 
 //class had used for testing in process of development and will be deleted after
 @Slf4j
@@ -30,13 +15,18 @@ public class Main {
         MLSGridFactory factory = new MLSGridFactory();
         MLSGridClient gridClient = factory.createClient("https://api.mlsgrid.com/", "9559104ea30324a4cbe8b0b25b9b0ec6be948ca8");
         gridClient.initAmazonConnection(bucketName, region, awsAccessKey, awsSecretKey, gridClient);
-        AmazonS3 amazonS3 = gridClient.getAmazonS3();
+
+        gridClient.getAndSaveAllImages("MRD10611226");
+        gridClient.getAndSaveAllImages("MRD10611226");
+
+//        it needs for downloading and browsing and deleting files, see later in code
+//        AmazonS3 amazonS3 = gridClient.getAmazonS3();
 
 //        deleting extra objects
 //        amazonS3.deleteObject(bucketName, "thumbnail_MRD10611226.jpg");
 
-//        copying file from url to bucket
-//        XferMgrUrlCopy.copyFileFromUrl(amazonS3, "https://s3.amazonaws.com/mlsgrid/images/742be4ba-76e6-4073-a935-5d6b1f3ec1c2.jpg", bucketName, "thumbnail_MRD10611226.jpg");//error
+//        download file to check if it has been downloaded correctly by viewing
+//        XferMgrDownload.downloadFile(amazonS3, bucketName, "thumbnail_MRD10611226.jpg", "thumbnail_MRD10611226.jpg", false);
 
 
 //        browsing objects in bucket - don't work simultaneously with classes from package aws because method xfer_mgr.shutdownNow() in the ends of methods of these classes - it kills connection pool !!! Run only single, i.e. without XferMgrUrlCopy.copyFileFromUrl !!!
