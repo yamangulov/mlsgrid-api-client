@@ -6,7 +6,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
-import com.innedhub.aws.XferMgrUrlCopy;
+import com.innedhub.aws.TransferMgrUrlCopy;
 import com.innedhub.enums.MLSResource;
 import com.innedhub.odata.Client;
 import com.innedhub.results.PropertyTO;
@@ -52,22 +52,22 @@ public class SingleModeMLSGridClient implements MLSGridClient {
     @Override
     public void getAndSaveAllImages(String mlsNumber) {
         List<PropertyTO> listMedia = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
-        TransferManager xfer_mgr = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
+        TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
         for (PropertyTO media : listMedia) {
             int order = Integer.parseInt(media.getSingleOption("Order"));
             if (order == 0) {
-                XferMgrUrlCopy.copyFileFromUrl(amazonS3, xfer_mgr, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + ".jpg");
+                TransferMgrUrlCopy.copyFileFromUrl(amazonS3, transferManager, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + ".jpg");
             } else {
-                XferMgrUrlCopy.copyFileFromUrl(amazonS3, xfer_mgr, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + "_" + media.getSingleOption("Order") +  ".jpg");
+                TransferMgrUrlCopy.copyFileFromUrl(amazonS3, transferManager, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + "_" + media.getSingleOption("Order") +  ".jpg");
             }
         }
-        xfer_mgr.shutdownNow();
+        transferManager.shutdownNow();
     }
 
     @Override
     public void getAndSaveAllImages(String mlsNumber, int limit) {
         List<PropertyTO> listMedia = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
-        TransferManager xfer_mgr = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
+        TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
         if (limit > listMedia.size()) {
             log.info("List Media files has less than {} photos. It'll be downloaded all {} files presented in list", limit, listMedia.size());
             limit = listMedia.size();
@@ -75,11 +75,11 @@ public class SingleModeMLSGridClient implements MLSGridClient {
         for (PropertyTO media : listMedia) {
             int order = Integer.parseInt(media.getSingleOption("Order"));
             if (order == 0) {
-                XferMgrUrlCopy.copyFileFromUrl(amazonS3, xfer_mgr, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + ".jpg");
+                TransferMgrUrlCopy.copyFileFromUrl(amazonS3, transferManager, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + ".jpg");
             } else if (order < limit){
-                XferMgrUrlCopy.copyFileFromUrl(amazonS3, xfer_mgr, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + "_" + media.getSingleOption("Order") +  ".jpg");
+                TransferMgrUrlCopy.copyFileFromUrl(amazonS3, transferManager, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + "_" + media.getSingleOption("Order") +  ".jpg");
             }
         }
-        xfer_mgr.shutdownNow();
+        transferManager.shutdownNow();
     }
 }

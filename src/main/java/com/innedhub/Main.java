@@ -26,10 +26,10 @@ public class Main {
 //        amazonS3.deleteObject(bucketName, "thumbnail_MRD10611226.jpg");
 
 //        download file to check if it has been downloaded correctly by viewing
-//        XferMgrDownload.downloadFile(amazonS3, bucketName, "thumbnail_MRD10611226.jpg", "thumbnail_MRD10611226.jpg", false);
+//        TransferMgrDownload.downloadFile(amazonS3, bucketName, "thumbnail_MRD10611226.jpg", "thumbnail_MRD10611226.jpg", false);
 
 
-//        browsing objects in bucket - don't work simultaneously with classes from package aws because method xfer_mgr.shutdownNow() in the ends of methods of these classes - it kills connection pool !!! Run only single, i.e. without XferMgrUrlCopy.copyFileFromUrl !!!
+//        browsing objects in bucket - don't work simultaneously with classes from package aws because method transferManager.shutdownNow() in the ends of methods of these classes - it kills connection pool !!! Run only single, i.e. without TransferMgrUrlCopy.copyFileFromUrl !!!
 //        S3Objects.inBucket(amazonS3, bucketName).forEach((S3ObjectSummary objectSummary) -> {
 //            log.info("Object summary in bucket {}: {}", bucketName, objectSummary.getKey());
 //        });

@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Slf4j
-public class XferMgrProgress {
+public class TransferMgrProgress {
     // waits for the transfer to complete, catching any exceptions that occur.
-    public static void waitForCompletion(Transfer xfer) {
+    public static void waitForCompletion(Transfer transfer) {
         
         try {
-            xfer.waitForCompletion();
+            transfer.waitForCompletion();
         } catch (AmazonServiceException e) {
             log.error("Amazon service error: " + e.getMessage());
             System.exit(1);
@@ -33,51 +33,51 @@ public class XferMgrProgress {
     }
 
     // Prints progress while waiting for the transfer to finish.
-    public static void showTransferProgress(Transfer xfer) {
+    public static void showTransferProgress(Transfer transfer) {
         
         // print the transfer's human-readable description
-        log.info(xfer.getDescription());
+        log.info(transfer.getDescription());
         // print an empty progress bar...
         printProgressBar(0.0);
-        // update the progress bar while the xfer is ongoing.
+        // update the progress bar while the transfer is ongoing.
         do {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 return;
             }
-            // Note: so_far and total aren't used, they're just for
+            // Note: soFar and total aren't used, they're just for
             // documentation purposes.
-            TransferProgress progress = xfer.getProgress();
-            long so_far = progress.getBytesTransferred();
+            TransferProgress progress = transfer.getProgress();
+            long soFar = progress.getBytesTransferred();
             long total = progress.getTotalBytesToTransfer();
             double pct = progress.getPercentTransferred();
             eraseProgressBar();
             printProgressBar(pct);
-        } while (xfer.isDone() == false);
+        } while (transfer.isDone() == false);
         // print the final state of the transfer.
-        TransferState xfer_state = xfer.getState();
-        log.info(": " + xfer_state);
+        TransferState transferState = transfer.getState();
+        log.info(": " + transferState);
         
     }
 
     // Prints progress of a multiple file upload while waiting for it to finish.
-    public static void showMultiUploadProgress(MultipleFileUpload multi_upload) {
+    public static void showMultiUploadProgress(MultipleFileUpload multiUpload) {
         // print the upload's human-readable description
-        log.info(multi_upload.getDescription());
+        log.info(multiUpload.getDescription());
         
-        Collection<? extends Upload> sub_xfers = new ArrayList<Upload>();
-        sub_xfers = multi_upload.getSubTransfers();
+        Collection<? extends Upload> subTransfers = new ArrayList<Upload>();
+        subTransfers = multiUpload.getSubTransfers();
 
         do {
             log.info("\nSubtransfer progress:\n");
-            for (Upload u : sub_xfers) {
-                log.info("  " + u.getDescription());
-                if (u.isDone()) {
-                    TransferState xfer_state = u.getState();
-                    log.info("  " + xfer_state);
+            for (Upload subTransfer : subTransfers) {
+                log.info("  " + subTransfer.getDescription());
+                if (subTransfer.isDone()) {
+                    TransferState transferState = subTransfer.getState();
+                    log.info("  " + transferState);
                 } else {
-                    TransferProgress progress = u.getProgress();
+                    TransferProgress progress = subTransfer.getProgress();
                     double pct = progress.getPercentTransferred();
                     printProgressBar(pct);
                     log.info("\n");
@@ -90,51 +90,51 @@ public class XferMgrProgress {
             } catch (InterruptedException e) {
                 return;
             }
-        } while (multi_upload.isDone() == false);
+        } while (multiUpload.isDone() == false);
         // print the final state of the transfer.
-        TransferState xfer_state = multi_upload.getState();
-        log.info("\nMultipleFileUpload " + xfer_state);
+        TransferState transferState = multiUpload.getState();
+        log.info("\nMultipleFileUpload " + transferState);
         
     }
 
     // prints a simple text progressbar: [#####     ]
     public static void printProgressBar(double pct) {
-        // if bar_size changes, then change erase_bar (in eraseProgressBar) to
+        // if barSize changes, then change eraseBar (in eraseProgressBar) to
         // match.
-        final int bar_size = 40;
-        final String empty_bar = "                                        ";
-        final String filled_bar = "########################################";
-        int amt_full = (int) (bar_size * (pct / 100.0));
-        System.out.format("  [%s%s]", filled_bar.substring(0, amt_full),
-                empty_bar.substring(0, bar_size - amt_full));
+        final int barSize = 40;
+        final String emptyBar = "                                        ";
+        final String filledBar = "########################################";
+        int amtFull = (int) (barSize * (pct / 100.0));
+        System.out.format("  [%s%s]", filledBar.substring(0, amtFull),
+                emptyBar.substring(0, barSize - amtFull));
     }
 
     // erases the progress bar.
     public static void eraseProgressBar() {
-        // erase_bar is bar_size (from printProgressBar) + 4 chars.
-        final String erase_bar = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
-        System.out.format(erase_bar);
+        // eraseBar is barSize (from printProgressBar) + 4 chars.
+        final String eraseBar = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
+        System.out.format(eraseBar);
     }
 
-    public static void uploadFileWithListener(String file_path,
-                                              String bucket_name, String key_prefix, boolean pause) {
-        log.info("file: " + file_path +
+    public static void uploadFileWithListener(String filePath,
+                                              String bucketName, String keyPrefix, boolean pause) {
+        log.info("file: " + filePath +
                 (pause ? " (pause)" : ""));
 
-        String key_name = null;
-        if (key_prefix != null) {
-            key_name = key_prefix + '/' + file_path;
+        String keyName;
+        if (keyPrefix != null) {
+            keyName = keyPrefix + '/' + filePath;
         } else {
-            key_name = file_path;
+            keyName = filePath;
         }
         
-        File f = new File(file_path);
-        TransferManager xfer_mgr = TransferManagerBuilder.standard().build();
+        File file = new File(filePath);
+        TransferManager transferManager = TransferManagerBuilder.standard().build();
         try {
-            Upload u = xfer_mgr.upload(bucket_name, key_name, f);
+            Upload transfer = transferManager.upload(bucketName, keyName, file);
             // print an empty progress bar...
             printProgressBar(0.0);
-            u.addProgressListener(new ProgressListener() {
+            transfer.addProgressListener(new ProgressListener() {
                 public void progressChanged(ProgressEvent e) {
                     double pct = e.getBytesTransferred() * 100.0 / e.getBytes();
                     eraseProgressBar();
@@ -142,36 +142,36 @@ public class XferMgrProgress {
                 }
             });
             // block with Transfer.waitForCompletion()
-            XferMgrProgress.waitForCompletion(u);
+            TransferMgrProgress.waitForCompletion(transfer);
             // print the final state of the transfer.
-            TransferState xfer_state = u.getState();
-            log.info(": " + xfer_state);
+            TransferState transferState = transfer.getState();
+            log.info(": " + transferState);
         } catch (AmazonServiceException e) {
             log.error(e.getErrorMessage());
             System.exit(1);
         }
-        xfer_mgr.shutdownNow();
+        transferManager.shutdownNow();
         
     }
 
-    public static void uploadDirWithSubprogress(String dir_path,
-                                                String bucket_name, String key_prefix, boolean recursive,
+    public static void uploadDirWithSubprogress(String dirPath,
+                                                String bucketName, String keyPrefix, boolean recursive,
                                                 boolean pause) {
-        log.info("directory: " + dir_path + (recursive ?
+        log.info("directory: " + dirPath + (recursive ?
                 " (recursive)" : "") + (pause ? " (pause)" : ""));
 
-        TransferManager xfer_mgr = new TransferManager();
+        TransferManager transferManager = new TransferManager();
         try {
-            MultipleFileUpload multi_upload = xfer_mgr.uploadDirectory(
-                    bucket_name, key_prefix, new File(dir_path), recursive);
+            MultipleFileUpload multiUpload = transferManager.uploadDirectory(
+                    bucketName, keyPrefix, new File(dirPath), recursive);
             // loop with Transfer.isDone()
-            XferMgrProgress.showMultiUploadProgress(multi_upload);
+            TransferMgrProgress.showMultiUploadProgress(multiUpload);
             // or block with Transfer.waitForCompletion()
-            XferMgrProgress.waitForCompletion(multi_upload);
+            TransferMgrProgress.waitForCompletion(multiUpload);
         } catch (AmazonServiceException e) {
             log.error(e.getErrorMessage());
             System.exit(1);
         }
-        xfer_mgr.shutdownNow();
+        transferManager.shutdownNow();
     }
 }
