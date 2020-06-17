@@ -10,6 +10,7 @@ import com.innedhub.aws.TransferMgrUrlCopy;
 import com.innedhub.enums.MLSResource;
 import com.innedhub.odata.Client;
 import com.innedhub.results.PropertyTO;
+import com.innedhub.results.SearchResult;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class SingleModeMLSGridClient implements MLSGridClient {
     }
 
     @Override
-    public List<PropertyTO> searchResult(MLSResource resource, String request) {
+    public SearchResult searchResult(MLSResource resource, String request) {
         Client client = new Client(apiUri, apiKey);
         return client.doRequestWithFilter(resource, request);
     }
@@ -51,9 +52,9 @@ public class SingleModeMLSGridClient implements MLSGridClient {
 
     @Override
     public void getAndSaveAllImages(String mlsNumber) {
-        List<PropertyTO> listMedia = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
+        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
         TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
-        for (PropertyTO media : listMedia) {
+        for (PropertyTO media : searchResult.getPropertyTOList()) {
             int order = Integer.parseInt(media.getSingleOption("Order"));
             if (order == 0) {
                 TransferMgrUrlCopy.copyFileFromUrl(amazonS3, transferManager, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + ".jpg");
@@ -66,13 +67,13 @@ public class SingleModeMLSGridClient implements MLSGridClient {
 
     @Override
     public void getAndSaveAllImages(String mlsNumber, int limit) {
-        List<PropertyTO> listMedia = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
+        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
         TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
-        if (limit > listMedia.size()) {
-            log.info("List Media files has less than {} photos. It'll be downloaded all {} files presented in list", limit, listMedia.size());
-            limit = listMedia.size();
+        if (limit > searchResult.getPropertyTOList().size()) {
+            log.info("List Media files has less than {} photos. It'll be downloaded all {} files presented in list", limit, searchResult.getPropertyTOList().size());
+            limit = searchResult.getPropertyTOList().size();
         }
-        for (PropertyTO media : listMedia) {
+        for (PropertyTO media : searchResult.getPropertyTOList()) {
             int order = Integer.parseInt(media.getSingleOption("Order"));
             if (order == 0) {
                 TransferMgrUrlCopy.copyFileFromUrl(amazonS3, transferManager, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + ".jpg");

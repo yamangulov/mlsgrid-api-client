@@ -1,6 +1,12 @@
 package com.innedhub;
 
+import com.innedhub.enums.MLSResource;
+import com.innedhub.results.PropertyTO;
+import com.innedhub.results.SearchResult;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.Map;
 
 //class had used for testing in process of development and will be deleted after
 @Slf4j
@@ -14,10 +20,19 @@ public class Main {
 
         MLSGridFactory factory = new MLSGridFactory();
         MLSGridClient gridClient = factory.createClient("https://api.mlsgrid.com/", "9559104ea30324a4cbe8b0b25b9b0ec6be948ca8");
-        gridClient.initAmazonConnection(bucketName, region, awsAccessKey, awsSecretKey, gridClient);
 
-        gridClient.getAndSaveAllImages("MRD10611226");
-        gridClient.getAndSaveAllImages("MRD10611226");
+        SearchResult propertyTOList = gridClient.searchResult(MLSResource.PROPERTY_RESI, "ModificationTimestamp gt 2020-02-04T23:59:59.99Z");
+//        for (PropertyTO propertyTO : propertyTOList) {
+//            Map<String, String> options = propertyTO.getOptions();
+//            for (Map.Entry<String, String> entry : options.entrySet()) {
+//                log.info("Property name: {}, property value: {}\n", entry.getKey(), entry.getValue());
+//            }
+//        }
+
+//        gridClient.initAmazonConnection(bucketName, region, awsAccessKey, awsSecretKey, gridClient);
+
+//        gridClient.getAndSaveAllImages("MRD10611226");
+//        gridClient.getAndSaveAllImages("MRD10611226");
 
 //        it needs for downloading and browsing and deleting files, see later in code
 //        AmazonS3 amazonS3 = gridClient.getAmazonS3();

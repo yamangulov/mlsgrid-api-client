@@ -3,6 +3,8 @@ package com.innedhub.odata;
 import com.innedhub.enums.MLSResource;
 import com.innedhub.results.PropertyTO;
 import com.innedhub.results.PropertyTOImpl;
+import com.innedhub.results.SearchResult;
+import com.innedhub.results.SearchResultImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.olingo.client.api.ODataClient;
 import org.apache.olingo.client.api.communication.request.retrieve.EdmMetadataRequest;
@@ -32,9 +34,10 @@ public class Client {
         client.getConfiguration().setHttpClientFactory(new BearerAuthHttpClientFactory(apiKey));
     }
 
-    public List<PropertyTO> doRequestWithFilter(MLSResource resource, String request) {
+    public SearchResult doRequestWithFilter(MLSResource resource, String request) {
         Edm edm = readEdm(apiUri);
         List<PropertyTO> listProperties = new ArrayList<>();
+        SearchResult searchResult;
         ClientEntitySetIterator<ClientEntitySet, ClientEntity> iterator;
         iterator = readEntitiesWithFilter(edm, apiUri, resource.getResource(), request);
         while (iterator.hasNext()) {
@@ -43,7 +46,12 @@ public class Client {
             propertyTO = getPropertyTO(ce.getProperties(), 0);
             listProperties.add(propertyTO);
         }
-        return listProperties;
+        if (iterator.getNext() != null) {
+            searchResult = new SearchResultImpl(listProperties, iterator.getNext(), true);
+        } else {
+            searchResult = new SearchResultImpl(listProperties, null, false);
+        }
+        return searchResult;
     }
 
     private PropertyTO getPropertyTO(Collection<ClientProperty> properties, int level) {

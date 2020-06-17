@@ -3,12 +3,13 @@ package com.innedhub;
 import com.amazonaws.services.s3.AmazonS3;
 import com.innedhub.enums.MLSResource;
 import com.innedhub.results.PropertyTO;
+import com.innedhub.results.SearchResult;
 import lombok.Getter;
 
 import java.util.List;
 public interface MLSGridClient {
 
-    List<PropertyTO> searchResult(MLSResource resource, String request);
+    SearchResult searchResult(MLSResource resource, String request);
 
     void getAndSaveAllImages(String mlsNumber);
 
