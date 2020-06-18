@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.URI;
 import java.util.List;
 
 @Getter
@@ -36,6 +37,18 @@ public class SingleModeMLSGridClient implements MLSGridClient {
     public SearchResult searchResult(MLSResource resource, String request) {
         Client client = new Client(apiUri, apiKey);
         return client.doRequestWithFilter(resource, request);
+    }
+
+    @Override
+    public SearchResult searchResult(MLSResource resource, String request, int top) {
+        Client client = new Client(apiUri, apiKey);
+        return client.doRequestWithFilter(resource, request, top);
+    }
+
+    @Override
+    public SearchResult searchResult(URI nextPage) {
+        Client client = new Client(apiUri, apiKey);
+        return client.doRequestFromUri(nextPage);
     }
 
     @Override

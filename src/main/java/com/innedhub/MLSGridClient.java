@@ -6,10 +6,15 @@ import com.innedhub.results.PropertyTO;
 import com.innedhub.results.SearchResult;
 import lombok.Getter;
 
+import java.net.URI;
 import java.util.List;
 public interface MLSGridClient {
 
     SearchResult searchResult(MLSResource resource, String request);
+
+    SearchResult searchResult(MLSResource resource, String request, int top);
+
+    SearchResult searchResult(URI nextPage);
 
     void getAndSaveAllImages(String mlsNumber);
 

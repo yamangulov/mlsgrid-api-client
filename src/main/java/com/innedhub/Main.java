@@ -21,13 +21,15 @@ public class Main {
         MLSGridFactory factory = new MLSGridFactory();
         MLSGridClient gridClient = factory.createClient("https://api.mlsgrid.com/", "9559104ea30324a4cbe8b0b25b9b0ec6be948ca8");
 
-        SearchResult propertyTOList = gridClient.searchResult(MLSResource.PROPERTY_RESI, "ModificationTimestamp gt 2020-02-04T23:59:59.99Z");
-//        for (PropertyTO propertyTO : propertyTOList) {
-//            Map<String, String> options = propertyTO.getOptions();
-//            for (Map.Entry<String, String> entry : options.entrySet()) {
-//                log.info("Property name: {}, property value: {}\n", entry.getKey(), entry.getValue());
-//            }
-//        }
+        SearchResult searchResult = gridClient.searchResult(MLSResource.PROPERTY_RESI, "ModificationTimestamp gt 2020-02-04T23:59:59.99Z");
+        List<PropertyTO> propertyTOList = searchResult.getPropertyTOList();
+        for (PropertyTO propertyTO : propertyTOList) {
+            Map<String, String> options = propertyTO.getOptions();
+            for (Map.Entry<String, String> entry : options.entrySet()) {
+                log.info("Property name: {}, property value: {}\n", entry.getKey(), entry.getValue());
+            }
+        }
+        log.info("Next link: {}", searchResult.getNextPage());
 
 //        gridClient.initAmazonConnection(bucketName, region, awsAccessKey, awsSecretKey, gridClient);
 

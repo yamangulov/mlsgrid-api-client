@@ -54,6 +54,48 @@ public class Client {
         return searchResult;
     }
 
+    public SearchResult doRequestWithFilter(MLSResource resource, String request, int top) {
+        Edm edm = readEdm(apiUri);
+        List<PropertyTO> listProperties = new ArrayList<>();
+        SearchResult searchResult;
+        ClientEntitySetIterator<ClientEntitySet, ClientEntity> iterator;
+        iterator = readEntitiesWithFilter(edm, apiUri, resource.getResource(), request);
+        for (int i = 0; i < top; i++) {
+            if (iterator.hasNext()) {
+                ClientEntity ce = iterator.next();
+                PropertyTO propertyTO;
+                propertyTO = getPropertyTO(ce.getProperties(), 0);
+                listProperties.add(propertyTO);
+            }
+        }
+        if (iterator.getNext() != null) {
+            searchResult = new SearchResultImpl(listProperties, iterator.getNext(), true);
+        } else {
+            searchResult = new SearchResultImpl(listProperties, null, false);
+        }
+        return searchResult;
+    }
+
+    public SearchResult doRequestFromUri(URI uri) {
+        Edm edm = readEdm(apiUri);
+        List<PropertyTO> listProperties = new ArrayList<>();
+        SearchResult searchResult;
+        ClientEntitySetIterator<ClientEntitySet, ClientEntity> iterator;
+        iterator = readEntities(edm, uri);
+        while (iterator.hasNext()) {
+            ClientEntity ce = iterator.next();
+            PropertyTO propertyTO;
+            propertyTO = getPropertyTO(ce.getProperties(), 0);
+            listProperties.add(propertyTO);
+        }
+        if (iterator.getNext() != null) {
+            searchResult = new SearchResultImpl(listProperties, iterator.getNext(), true);
+        } else {
+            searchResult = new SearchResultImpl(listProperties, null, false);
+        }
+        return searchResult;
+    }
+
     private PropertyTO getPropertyTO(Collection<ClientProperty> properties, int level) {
         PropertyTO propertyTO = new PropertyTOImpl(new HashMap<>());
         for (ClientProperty entry : properties) {
