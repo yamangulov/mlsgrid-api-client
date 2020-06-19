@@ -16,7 +16,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
-import java.util.List;
 
 @Getter
 @Setter

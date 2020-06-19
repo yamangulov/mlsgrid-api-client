@@ -20,11 +20,9 @@ public class TransferMgrUrlCopy {
         log.info("        in bucket: " + toBucket);
 
         try (InputStream inputStream = new URL(fromUrl).openStream()){
-            //inputStream = new URL(fromUrl).openStream();
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType("image/jpeg");
             objectMetadata.addUserMetadata("title", toBucket + "/" + toKey);
-            //method don't set objectMetadata.setContentLength, because mlsgrid aws bucket don't give it, also it can be the same for other buckets where the photos from api.mlsgrid.com store, but method works well despite warning in log.
             try {
                 transferManager.upload(toBucket, toKey, inputStream, objectMetadata);
             } catch (AmazonServiceException e) {

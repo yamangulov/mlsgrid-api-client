@@ -2,12 +2,9 @@ package com.innedhub;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.innedhub.enums.MLSResource;
-import com.innedhub.results.PropertyTO;
 import com.innedhub.results.SearchResult;
-import lombok.Getter;
 
 import java.net.URI;
-import java.util.List;
 public interface MLSGridClient {
 
     SearchResult searchResult(MLSResource resource, String request);

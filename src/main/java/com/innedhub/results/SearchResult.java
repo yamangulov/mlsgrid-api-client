@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface SearchResult {
     List<PropertyTO> getPropertyTOList();
-    URI getNextPage();
-    boolean isHasNextPage();
+    URI nextPage();
+    boolean hasNextPage();
 }

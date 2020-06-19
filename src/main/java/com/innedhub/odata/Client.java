@@ -20,9 +20,6 @@ import java.util.*;
 import java.util.Map.Entry;
 
 
-/**
- *
- */
 @Slf4j
 public class Client {
     private ODataClient client;
@@ -144,7 +141,6 @@ public class Client {
     }
 
     private ClientEntitySetIterator<ClientEntitySet, ClientEntity> readEntities(Edm edm, URI absoluteUri) {
-        //System.out.println("URI = " + absoluteUri);
         ODataEntitySetIteratorRequest<ClientEntitySet, ClientEntity> request =
                 client.getRetrieveRequestFactory().getEntitySetIteratorRequest(absoluteUri);
         request.setAccept("application/json");

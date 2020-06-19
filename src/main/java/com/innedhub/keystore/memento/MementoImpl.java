@@ -1,7 +1,5 @@
 package com.innedhub.keystore.memento;
 
-import com.innedhub.keystore.memento.Memento;
-
 import java.util.Map;
 
 public class MementoImpl implements Memento {

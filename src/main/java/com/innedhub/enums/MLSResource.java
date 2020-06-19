@@ -1,10 +1,7 @@
 package com.innedhub.enums;
 
-import com.innedhub.exceptions.NotValidParamsForSearch;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.*;
 
 @AllArgsConstructor
 @Getter
