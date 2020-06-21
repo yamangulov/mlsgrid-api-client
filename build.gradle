@@ -45,8 +45,8 @@ publishing {
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
 
             credentials(AwsCredentials) {
-                accessKey "${System.getenv('AWS_KEY')}"
-                secretKey "${System.getenv('AWS_SECRET')}"
+                accessKey "${System.getenv('AWS_ACCESS_KEY_ID')}"
+                secretKey "${System.getenv('AWS_SECRET_ACCESS_KEY')}"
             }
 
         }
