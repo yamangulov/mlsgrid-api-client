@@ -1,10 +1,17 @@
 plugins {
     id "net.ltgt.apt" version "0.21"
     id "java-library"
+    id "maven-publish"
+    id "signing"
 }
 
 group 'com.innedhub'
 version '1.0-SNAPSHOT'
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -15,6 +22,39 @@ ext {
     slf4jVersion = "2.0.0-alpha1"
     odataVersion = "4.7.1"
     awsSdkVersion = "1.11.804"
+    docsDir = "docs"
+    buildDir = "s3://repo.chichagodealvaults.org"
+}
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.innedhub'
+            artifactId = 'mlsgrid-api-client'
+            version = '1.0-SNAPSHOT'
+
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+
+            def releasesRepoUrl = "$buildDir/release"
+            def snapshotsRepoUrl = "$buildDir/snapshot"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+            credentials(AwsCredentials) {
+                accessKey "${System.getenv('AWS_KEY')}"
+                secretKey "${System.getenv('AWS_SECRET')}"
+            }
+
+        }
+    }
+}
+
+signing {
+    sign publishing.publications
 }
 
 repositories {
@@ -33,6 +73,10 @@ dependencies {
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: "${junitJupiterVersion}"
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: "${junitJupiterVersion}"
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: "${junitJupiterVersion}"
+}
+
+task generateDocs(type: Javadoc) {
+    source = sourceSets.main.allJava
 }
 
 logging.captureStandardOutput LogLevel.INFO
