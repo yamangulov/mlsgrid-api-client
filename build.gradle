@@ -26,6 +26,8 @@ ext {
     def releasesRepoUrl = "${buildDir}/release"
     def snapshotsRepoUrl = "${buildDir}/snapshot"
     publishUrl = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+    awsAccessKeyId = System.env.AWS_ACCESS_KEY_ID ?: findProperty('AWS_ACCESS_KEY_ID')
+    awsSecretAccessKey = System.env.AWS_SECRET_ACCESS_KEY ?: findProperty('AWS_SECRET_ACCESS_KEY')
 }
 
 
@@ -45,8 +47,8 @@ publishing {
             url publishUrl
 
             credentials(AwsCredentials) {
-                accessKey "${System.getenv('AWS_ACCESS_KEY_ID')}"
-                secretKey "${System.getenv('AWS_SECRET_ACCESS_KEY')}"
+                accessKey = awsAccessKeyId
+                secretKey = awsSecretAccessKey
             }
 
         }
@@ -55,6 +57,16 @@ publishing {
 
 repositories {
     mavenCentral()
+    maven {
+
+        url publishUrl
+
+        credentials(AwsCredentials) {
+            accessKey = awsAccessKeyId
+            secretKey = awsSecretAccessKey
+        }
+
+    }
 }
 
 dependencies {
