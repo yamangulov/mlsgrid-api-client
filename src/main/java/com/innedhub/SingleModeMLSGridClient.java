@@ -16,6 +16,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -75,6 +79,50 @@ public class SingleModeMLSGridClient implements MLSGridClient {
             }
         }
         transferManager.shutdownNow();
+    }
+
+    @Override
+    public Map<String, String> getAndSaveAllImagesAndReturnMap(String mlsNumber) {
+        Map<String, String> mlsLinkToAwsLinkMap = new LinkedHashMap<>();
+        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
+        TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
+        for (PropertyTO media : searchResult.getPropertyTOList()) {
+            int order = Integer.parseInt(media.getSingleOption("Order"));
+            String mediaURL = media.getSingleOption("MediaURL");
+            String awsKey;
+            if (order == 0) {
+                awsKey = "thumbnail_" + media.getSingleOption("ResourceRecordID") + ".jpg";
+                TransferMgrUrlCopy.copyFileFromUrl(amazonS3, transferManager, mediaURL, bucketName, awsKey);
+            } else {
+                awsKey = "thumbnail_" + media.getSingleOption("ResourceRecordID") + "_" + media.getSingleOption("Order") +  ".jpg";
+                TransferMgrUrlCopy.copyFileFromUrl(amazonS3, transferManager, mediaURL, bucketName, awsKey);
+            }
+            mlsLinkToAwsLinkMap.put(mediaURL, awsKey);
+        }
+        transferManager.shutdownNow();
+        return mlsLinkToAwsLinkMap;
+    }
+
+    private List<String> getMLSLinksFromMLSGrid(String mlsNumber) {
+        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
+        List<PropertyTO> propertyTOList = searchResult.getPropertyTOList();
+        List<String> mlsLinks = new ArrayList<>();
+        for (PropertyTO propertyTO : propertyTOList) {
+            String mlsLink = propertyTO.getSingleOption("MediaURL");
+            mlsLinks.add(mlsLink);
+        }
+        return mlsLinks;
+    }
+
+    @Override
+    public Map<String, List<String>> getMLSLinksFromMLSGrid(List<PropertyTO> propertyTOList) {
+        Map<String, List<String>> mlsLinksMap = new LinkedHashMap<>();
+        for (PropertyTO propertyTO : propertyTOList) {
+            String mlsNumber = propertyTO.getSingleOption("ResourceRecordID");
+            List<String> mlsLinksForMLSNumber = getMLSLinksFromMLSGrid(mlsNumber);
+            mlsLinksMap.put(mlsNumber, mlsLinksForMLSNumber);
+        }
+        return mlsLinksMap;
     }
 
     @Override

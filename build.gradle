@@ -36,7 +36,7 @@ publishing {
         mavenJava (MavenPublication) {
             groupId = 'com.innedhub'
             artifactId = 'mlsgrid-api-client'
-            version = '1.0-SNAPSHOT'
+            version = '1.1-SNAPSHOT'
 
             from components.java
         }
