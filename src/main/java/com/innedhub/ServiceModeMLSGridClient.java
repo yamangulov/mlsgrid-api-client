@@ -17,6 +17,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Getter
@@ -123,6 +125,16 @@ class ServiceModeMLSGridClient implements MLSGridClient {
         } catch (NotValidKeyForServiceModeException e) {
             log.error("Customers key not valid, contact technical support service", e);
         }
+    }
+
+    @Override
+    public Map<String, String> getAndSaveAllImagesAndReturnMap(String mlsNumber) {
+        return null;
+    }
+
+    @Override
+    public Map<String, List<String>> getMLSLinksFromMLSGrid(List<PropertyTO> propertyTOList) {
+        return null;
     }
 
     @Override
