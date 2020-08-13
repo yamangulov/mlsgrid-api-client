@@ -118,7 +118,7 @@ public class SingleModeMLSGridClient implements MLSGridClient {
     public Map<String, List<String>> getMLSLinksFromMLSGrid(List<PropertyTO> propertyTOList) {
         Map<String, List<String>> mlsLinksMap = new LinkedHashMap<>();
         for (PropertyTO propertyTO : propertyTOList) {
-            String mlsNumber = propertyTO.getSingleOption("ResourceRecordID");
+            String mlsNumber = propertyTO.getSingleOption("ListingId");
             List<String> mlsLinksForMLSNumber = getMLSLinksFromMLSGrid(mlsNumber);
             mlsLinksMap.put(mlsNumber, mlsLinksForMLSNumber);
         }
