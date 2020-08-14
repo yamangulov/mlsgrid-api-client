@@ -68,7 +68,7 @@ public class SingleModeMLSGridClient implements MLSGridClient {
 
     @Override
     public void getAndSaveAllImages(String mlsNumber) {
-        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
+        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "' and MlgCanView eq true");
         TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
         for (PropertyTO media : searchResult.getPropertyTOList()) {
             int order = Integer.parseInt(media.getSingleOption("Order"));
@@ -84,7 +84,7 @@ public class SingleModeMLSGridClient implements MLSGridClient {
     @Override
     public Map<String, String> getAndSaveAllImagesAndReturnMap(String mlsNumber) {
         Map<String, String> mlsLinkToAwsLinkMap = new LinkedHashMap<>();
-        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
+        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "' and MlgCanView eq true");
         TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
         for (PropertyTO media : searchResult.getPropertyTOList()) {
             int order = Integer.parseInt(media.getSingleOption("Order"));
@@ -104,7 +104,7 @@ public class SingleModeMLSGridClient implements MLSGridClient {
     }
 
     private List<String> getMLSLinksFromMLSGrid(String mlsNumber) {
-        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
+        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "' and MlgCanView eq true");
         List<PropertyTO> propertyTOList = searchResult.getPropertyTOList();
         List<String> mlsLinks = new ArrayList<>();
         for (PropertyTO propertyTO : propertyTOList) {
@@ -127,7 +127,7 @@ public class SingleModeMLSGridClient implements MLSGridClient {
 
     @Override
     public void getAndSaveAllImages(String mlsNumber, int limit) {
-        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "'");
+        SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "' and MlgCanView eq true");
         TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
         if (limit > searchResult.getPropertyTOList().size()) {
             log.info("List Media files has less than {} photos. It'll be downloaded all {} files presented in list", limit, searchResult.getPropertyTOList().size());
