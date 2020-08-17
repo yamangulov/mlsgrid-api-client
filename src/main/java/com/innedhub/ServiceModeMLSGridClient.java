@@ -170,4 +170,10 @@ class ServiceModeMLSGridClient implements MLSGridClient {
         //realize method checkApiKey for checking apiKey of client in SERVICE mode
         return false;
     }
+
+    @Override
+    public void stopTransferManager() {
+        //TODO
+        //realize method checkApiKey for checking apiKey of client in SERVICE mode
+    }
 }

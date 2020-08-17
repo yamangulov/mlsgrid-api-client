@@ -30,6 +30,7 @@ public class SingleModeMLSGridClient implements MLSGridClient {
     private String bucketName;
     private AmazonS3 amazonS3;
     private MLSGridClient currentGridClient;
+    private TransferManager transferManager;
 
     public SingleModeMLSGridClient(String apiUri, String apiKey) {
         this.apiUri = apiUri;
@@ -64,12 +65,12 @@ public class SingleModeMLSGridClient implements MLSGridClient {
         this.bucketName = bucketName;
         this.amazonS3 = amazonS3;
         this.currentGridClient = currentGridClient;
+        this.transferManager  = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
     }
 
     @Override
     public void getAndSaveAllImages(String mlsNumber) {
         SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "' and MlgCanView eq true");
-        TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
         for (PropertyTO media : searchResult.getPropertyTOList()) {
             int order = Integer.parseInt(media.getSingleOption("Order"));
             if (order == 0) {
@@ -78,14 +79,12 @@ public class SingleModeMLSGridClient implements MLSGridClient {
                 TransferMgrUrlCopy.copyFileFromUrl(amazonS3, transferManager, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + "_" + media.getSingleOption("Order") +  ".jpg");
             }
         }
-        transferManager.shutdownNow();
     }
 
     @Override
     public Map<String, String> getAndSaveAllImagesAndReturnMap(String mlsNumber) {
         Map<String, String> mlsLinkToAwsLinkMap = new LinkedHashMap<>();
         SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "' and MlgCanView eq true");
-        TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
         for (PropertyTO media : searchResult.getPropertyTOList()) {
             int order = Integer.parseInt(media.getSingleOption("Order"));
             String mediaURL = media.getSingleOption("MediaURL");
@@ -99,7 +98,6 @@ public class SingleModeMLSGridClient implements MLSGridClient {
             }
             mlsLinkToAwsLinkMap.put(mediaURL, awsKey);
         }
-        transferManager.shutdownNow();
         return mlsLinkToAwsLinkMap;
     }
 
@@ -128,7 +126,6 @@ public class SingleModeMLSGridClient implements MLSGridClient {
     @Override
     public void getAndSaveAllImages(String mlsNumber, int limit) {
         SearchResult searchResult = currentGridClient.searchResult(MLSResource.MEDIA, "ResourceRecordID eq '" + mlsNumber + "' and MlgCanView eq true");
-        TransferManager transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
         if (limit > searchResult.getPropertyTOList().size()) {
             log.info("List Media files has less than {} photos. It'll be downloaded all {} files presented in list", limit, searchResult.getPropertyTOList().size());
             limit = searchResult.getPropertyTOList().size();
@@ -141,6 +138,10 @@ public class SingleModeMLSGridClient implements MLSGridClient {
                 TransferMgrUrlCopy.copyFileFromUrl(amazonS3, transferManager, media.getSingleOption("MediaURL"), bucketName, "thumbnail_" + media.getSingleOption("ResourceRecordID") + "_" + media.getSingleOption("Order") +  ".jpg");
             }
         }
+    }
+
+    @Override
+    public void stopTransferManager() {
         transferManager.shutdownNow();
     }
 }

@@ -28,4 +28,6 @@ public interface MLSGridClient {
     void initAmazonConnection(String bucketName, String region, String awsAccessKey, String awsSecretKey, MLSGridClient currentGridClient);
 
     AmazonS3 getAmazonS3();
+
+    void stopTransferManager();
 }
