@@ -4,6 +4,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -24,7 +25,9 @@ public class TransferMgrUrlCopy {
             objectMetadata.setContentType("image/jpeg");
             objectMetadata.addUserMetadata("title", toBucket + "/" + toKey);
             try {
-                transferManager.upload(toBucket, toKey, inputStream, objectMetadata);
+                Upload upload = transferManager.upload(toBucket, toKey, inputStream, objectMetadata);
+                TransferMgrProgress.showTransferProgress(upload);
+                TransferMgrProgress.waitForCompletion(upload);
             } catch (AmazonServiceException e) {
                 log.error(e.getErrorMessage());
             }
